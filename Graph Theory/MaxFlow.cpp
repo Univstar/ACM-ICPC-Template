@@ -48,22 +48,22 @@ namespace Dinic
 	{
 		memset(dist, -1, sizeof(dist));
 		int begin = 0, end = 0;
-		que[end++] = st, dist[st] = 0;
+		que[end++] = ed, dist[ed] = 0;
 		while (begin != end)
 		{
 			int u = que[begin++];
 			for (int i = head[u]; ~i; i = e[i].next)
 			{
 				int v = e[i].adj;
-				if (e[i].flow && !~dist[v])
+				if (e[i ^ 1].flow && !~dist[v])
 				{
 					dist[v] = dist[u] + 1;
-					if (v == ed) return true;
+					if (v == st) return true;
 					que[end++] = v;
 				}
 			}
 		}
-		return ~dist[ed];
+		return false;
 	}
 
 	int DFS(int u, int uMin)
@@ -73,7 +73,7 @@ namespace Dinic
 		for (int &i = cur[u]; ~i; i = e[i].next)
 		{
 			int v = e[i].adj, delta;
-			if (dist[v] == dist[u] + 1 && (delta = DFS(v, min(uMin, e[i].flow))))
+			if (dist[v] == dist[u] - 1 && (delta = DFS(v, min(uMin, e[i].flow))))
 			{
 				e[i].flow -= delta, e[i ^ 1].flow += delta;
 				uMin -= delta, flow += delta;
